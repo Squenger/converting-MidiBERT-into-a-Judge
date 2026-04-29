@@ -9,11 +9,12 @@ import time
 import matplotlib.pyplot as plt
 
 if torch.cuda.is_available():
-    device = "cuda"
+    device = torch.device('cuda')
+    print(f" CUDA device: {torch.cuda.get_device_name(0)}")
 elif torch.backends.mps.is_available():
-    device = "mps"
+    device = torch.device("mps")
 else:
-    device = "cpu"
+    device = torch.device("cpu")
 print(f"Using device: {device}")
 
 # initialization (regression mode)
@@ -40,8 +41,8 @@ val_data = data[split_idx:]
 train_dataset = MidiBERTRewardDataset(train_data, tokenizer)
 val_dataset = MidiBERTRewardDataset(val_data, tokenizer)
 
-train_dataloader = DataLoader(train_dataset, batch_size=8, shuffle=True)
-val_dataloader = DataLoader(val_dataset, batch_size=8, shuffle=False)
+train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+val_dataloader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 
 
 # we use a small learning rate because midibert already knows music
@@ -50,7 +51,7 @@ optimizer = AdamW(judge_model.parameters(), lr=2e-5)
 # loss function: mse
 loss_fn = nn.MSELoss() 
 
-epochs = 10 
+epochs = 50 
 
 # training loop
 print("starting training")
