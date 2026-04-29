@@ -37,9 +37,11 @@ def corrupt_tokens(tokens, tokenizer, severity=0.5):
         if "pitch" in event_str.lower() and "pitch" in active_alteration:
             type_erreur = random.choice(["semi_tone", "octave", "supp"])
             if type_erreur == "semi_tone":
-                corrupted_tokens.append(token_id + random.choice([-2, -1, 1, 2]))
+                new_id = token_id + random.choice([-2, -1, 1, 2])
+                corrupted_tokens.append(max(0, min(len(tokenizer) - 1, new_id)))
             elif type_erreur == "octave":
-                corrupted_tokens.append(token_id + random.choice([-12, 12]))
+                new_id = token_id + random.choice([-12, 12])
+                corrupted_tokens.append(max(0, min(len(tokenizer) - 1, new_id)))
             # if "supp", don't add it to the list 
         
         # rhythm error (position/time)
@@ -53,14 +55,14 @@ def corrupt_tokens(tokens, tokenizer, severity=0.5):
         # duration error
         elif "duration" in event_str.lower() and "duration" in active_alteration:
             # divide the duration by 2 (staccato)
-
-            corrupted_tokens.append(max(0, token_id - 4)) 
+            new_id = token_id - 4
+            corrupted_tokens.append(max(0, min(len(tokenizer) - 1, new_id)))
 
         # velocity error
         elif "velocity" in event_str.lower() and "velocity" in active_alteration:
             # force the note to be played very loud
-
-            corrupted_tokens.append(token_id + 10) 
+            new_id = token_id + 10
+            corrupted_tokens.append(max(0, min(len(tokenizer) - 1, new_id)))
             
         else:
             corrupted_tokens.append(token_id)
